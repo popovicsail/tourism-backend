@@ -9,10 +9,10 @@ namespace tourism_api.Controllers;
 public class UserController : ControllerBase
 {
 
-    private readonly UserRepository userRepo;
+    private readonly UserRepository _userRepo;
     public UserController(IConfiguration configuration)
     {
-        userRepo = new UserRepository(configuration);
+        _userRepo = new UserRepository(configuration);
     }
 
     [HttpPost("login")]
@@ -25,7 +25,7 @@ public class UserController : ControllerBase
 
         try
         {
-            User user = userRepo.Get(credentials.Username, credentials.Password);
+            User user = _userRepo.Get(credentials.Username, credentials.Password);
             if (user == null)
             {
                 return NotFound("Invalid username or password.");

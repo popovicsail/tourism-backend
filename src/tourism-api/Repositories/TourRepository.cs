@@ -5,10 +5,10 @@ namespace tourism_api.Repositories;
 
 public class TourRepository
 {
-    private readonly string connectionString;
+    private readonly string _connectionString;
     public TourRepository(IConfiguration configuration)
     {
-        connectionString = configuration["ConnectionString:SQLiteConnection"];
+        _connectionString = configuration["ConnectionString:SQLiteConnection"];
     }
 
     public List<Tour> GetPaged(int page, int pageSize, string orderBy, string orderDirection)
@@ -17,7 +17,7 @@ public class TourRepository
 
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = @$"
@@ -79,7 +79,7 @@ public class TourRepository
     {
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = "SELECT COUNT(*) FROM Tours";
@@ -115,7 +115,7 @@ public class TourRepository
 
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = @$"
@@ -173,7 +173,7 @@ public class TourRepository
 
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = @"
@@ -257,7 +257,7 @@ public class TourRepository
     {
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = @"
@@ -302,7 +302,7 @@ public class TourRepository
     {
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = @"
@@ -342,7 +342,7 @@ public class TourRepository
     {
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = "DELETE FROM Tours WHERE Id = @Id";

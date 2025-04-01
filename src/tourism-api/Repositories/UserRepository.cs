@@ -5,16 +5,16 @@ namespace tourism_api.Repositories;
 
 public class UserRepository
 {
-    private readonly string connectionString;
+    private readonly string _connectionString;
     public UserRepository(IConfiguration configuration)
     {
-        connectionString = configuration["ConnectionString:SQLiteConnection"];
+        _connectionString = configuration["ConnectionString:SQLiteConnection"];
     }
     public User Get(string username, string password)
     {
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = "SELECT Id, Username, Password, Role FROM Users WHERE Username = @Username AND Password = @Password";

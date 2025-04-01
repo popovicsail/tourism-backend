@@ -5,18 +5,18 @@ namespace tourism_api.Repositories;
 
 public class MealRepository
 {
-    private readonly string connectionString;
+    private readonly string _connectionString;
 
     public MealRepository(IConfiguration configuration)
     {
-        connectionString = configuration["ConnectionString:SQLiteConnection"];
+        _connectionString = configuration["ConnectionString:SQLiteConnection"];
     }
 
     public Meal Create(Meal meal)
     {
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = @"
@@ -61,7 +61,7 @@ public class MealRepository
     {
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = "DELETE FROM Meals WHERE Id = @Id";

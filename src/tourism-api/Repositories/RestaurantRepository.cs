@@ -4,10 +4,10 @@ namespace tourism_api.Repositories;
 
 public class RestaurantRepository
 {
-    private readonly string connectionString;
+    private readonly string _connectionString;
     public RestaurantRepository(IConfiguration configuration)
     {
-        connectionString = configuration["ConnectionString:SQLiteConnection"];
+        _connectionString = configuration["ConnectionString:SQLiteConnection"];
     }
 
     public List<Restaurant> GetPaged(int page, int pageSize, string orderBy, string orderDirection)
@@ -16,7 +16,7 @@ public class RestaurantRepository
 
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = @$"
@@ -81,7 +81,7 @@ public class RestaurantRepository
     {
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = "SELECT COUNT(*) FROM Restaurants";
@@ -117,7 +117,7 @@ public class RestaurantRepository
 
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = @"
@@ -178,7 +178,7 @@ public class RestaurantRepository
 
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = @"
@@ -263,7 +263,7 @@ public class RestaurantRepository
     {
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = @"
@@ -310,7 +310,7 @@ public class RestaurantRepository
     {
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = @"
@@ -352,7 +352,7 @@ public class RestaurantRepository
     {
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = "DELETE FROM Restaurants WHERE Id = @Id";

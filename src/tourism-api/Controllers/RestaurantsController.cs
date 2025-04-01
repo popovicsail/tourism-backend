@@ -8,11 +8,11 @@ namespace tourism_api.Controllers;
 [ApiController]
 public class RestaurantController : ControllerBase
 {
-    private readonly RestaurantRepository restaurantRepo;
+    private readonly RestaurantRepository _restaurantRepo;
 
     public RestaurantController(IConfiguration configuration)
     {
-        restaurantRepo = new RestaurantRepository(configuration);
+        _restaurantRepo = new RestaurantRepository(configuration);
     }
 
     [HttpGet]
@@ -20,7 +20,7 @@ public class RestaurantController : ControllerBase
     {
         if(ownerId > 0)
         {
-            return Ok(restaurantRepo.GetByOwner(ownerId));
+            return Ok(_restaurantRepo.GetByOwner(ownerId));
         }
 
         // Validacija za orderBy i orderDirection
@@ -38,8 +38,8 @@ public class RestaurantController : ControllerBase
 
         try
         {
-            List<Restaurant> restaurants = restaurantRepo.GetPaged(page, pageSize, orderBy, orderDirection);
-            int totalCount = restaurantRepo.CountAll();
+            List<Restaurant> restaurants = _restaurantRepo.GetPaged(page, pageSize, orderBy, orderDirection);
+            int totalCount = _restaurantRepo.CountAll();
             Object result = new
             {
                 Data = restaurants,
@@ -58,7 +58,7 @@ public class RestaurantController : ControllerBase
     {
         try
         {
-            Restaurant restaurant = restaurantRepo.GetById(id);
+            Restaurant restaurant = _restaurantRepo.GetById(id);
             if (restaurant == null)
             {
                 return NotFound($"Restaurant with ID {id} not found.");
@@ -81,7 +81,7 @@ public class RestaurantController : ControllerBase
 
         try
         {
-            Restaurant createdRestaurant = restaurantRepo.Create(newRestaurant);
+            Restaurant createdRestaurant = _restaurantRepo.Create(newRestaurant);
             return Ok(createdRestaurant);
         }
         catch (Exception ex)
@@ -101,7 +101,7 @@ public class RestaurantController : ControllerBase
         try
         {
             restaurant.Id = id;
-            Restaurant updatedRestaurant = restaurantRepo.Update(restaurant);
+            Restaurant updatedRestaurant = _restaurantRepo.Update(restaurant);
             if (updatedRestaurant == null)
             {
                 return NotFound($"Restaurant with ID {id} not found.");
@@ -119,7 +119,7 @@ public class RestaurantController : ControllerBase
     {
         try
         {
-            bool isDeleted = restaurantRepo.Delete(id);
+            bool isDeleted = _restaurantRepo.Delete(id);
             if (isDeleted)
             {
                 return NoContent();

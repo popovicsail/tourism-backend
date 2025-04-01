@@ -8,13 +8,13 @@ namespace tourism_api.Controllers;
 [ApiController]
 public class MealController : ControllerBase
 {
-    private readonly RestaurantRepository restaurantRepo;
-    private readonly MealRepository mealRepo;
+    private readonly RestaurantRepository _restaurantRepo;
+    private readonly MealRepository _mealRepo;
 
     public MealController(IConfiguration configuration)
     {
-        restaurantRepo = new RestaurantRepository(configuration);
-        mealRepo = new MealRepository(configuration);
+        _restaurantRepo = new RestaurantRepository(configuration);
+        _mealRepo = new MealRepository(configuration);
     }
 
     [HttpPost]
@@ -27,14 +27,14 @@ public class MealController : ControllerBase
 
         try
         {
-            Restaurant restaurant = restaurantRepo.GetById(restaurantId);
+            Restaurant restaurant = _restaurantRepo.GetById(restaurantId);
             if (restaurant == null)
             {
                 return NotFound($"Restaurant with ID {restaurantId} not found.");
             }
 
             newMeal.RestaurantId = restaurantId;
-            Meal createdMeal = mealRepo.Create(newMeal);
+            Meal createdMeal = _mealRepo.Create(newMeal);
             return Ok(createdMeal);
         }
         catch (Exception ex)
@@ -48,13 +48,13 @@ public class MealController : ControllerBase
     {
         try
         {
-            Restaurant restaurant = restaurantRepo.GetById(restaurantId);
+            Restaurant restaurant = _restaurantRepo.GetById(restaurantId);
             if (restaurant == null)
             {
                 return NotFound($"Restaurant with ID {restaurantId} not found.");
             }
 
-            bool isDeleted = mealRepo.Delete(id);
+            bool isDeleted = _mealRepo.Delete(id);
             if (isDeleted)
             {
                 return NoContent();

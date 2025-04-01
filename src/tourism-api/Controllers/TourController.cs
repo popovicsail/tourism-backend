@@ -8,11 +8,11 @@ namespace tourism_api.Controllers;
 [ApiController]
 public class TourController : ControllerBase
 {
-    private readonly TourRepository tourRepo;
+    private readonly TourRepository _tourRepo;
 
     public TourController(IConfiguration configuration)
     {
-        tourRepo = new TourRepository(configuration);
+        _tourRepo = new TourRepository(configuration);
     }
 
     [HttpGet]
@@ -20,7 +20,7 @@ public class TourController : ControllerBase
     {
         if (guideId > 0)
         {
-            return Ok(tourRepo.GetByGuide(guideId));
+            return Ok(_tourRepo.GetByGuide(guideId));
         }
 
         // Validacija za orderBy i orderDirection
@@ -38,8 +38,8 @@ public class TourController : ControllerBase
 
         try
         {
-            List<Tour> tours = tourRepo.GetPaged(page, pageSize, orderBy, orderDirection);
-            int totalCount = tourRepo.CountAll();
+            List<Tour> tours = _tourRepo.GetPaged(page, pageSize, orderBy, orderDirection);
+            int totalCount = _tourRepo.CountAll();
             Object result = new
             {
                 Data = tours,
@@ -58,7 +58,7 @@ public class TourController : ControllerBase
     {
         try
         {
-            Tour tour = tourRepo.GetById(id);
+            Tour tour = _tourRepo.GetById(id);
             if (tour == null)
             {
                 return NotFound($"Tour with ID {id} not found.");
@@ -81,7 +81,7 @@ public class TourController : ControllerBase
 
         try
         {
-            Tour createdTour = tourRepo.Create(newTour);
+            Tour createdTour = _tourRepo.Create(newTour);
             return Ok(createdTour);
         }
         catch (Exception ex)
@@ -101,7 +101,7 @@ public class TourController : ControllerBase
         try
         {
             tour.Id = id;
-            Tour updatedTour = tourRepo.Update(tour);
+            Tour updatedTour = _tourRepo.Update(tour);
             if (updatedTour == null)
             {
                 return NotFound();
@@ -119,7 +119,7 @@ public class TourController : ControllerBase
     {
         try
         {
-            bool isDeleted = tourRepo.Delete(id);
+            bool isDeleted = _tourRepo.Delete(id);
             if (isDeleted)
             {
                 return NoContent();

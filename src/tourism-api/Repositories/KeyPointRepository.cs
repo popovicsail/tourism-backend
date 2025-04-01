@@ -5,18 +5,18 @@ namespace tourism_api.Repositories;
 
 public class KeyPointRepository
 {
-    private readonly string connectionString;
+    private readonly string _connectionString;
 
     public KeyPointRepository(IConfiguration configuration)
     {
-        connectionString = configuration["ConnectionString:SQLiteConnection"];
+        _connectionString = configuration["ConnectionString:SQLiteConnection"];
     }
 
     public KeyPoint Create(KeyPoint keyPoint)
     {
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = @"
@@ -62,7 +62,7 @@ public class KeyPointRepository
     {
         try
         {
-            using SqliteConnection connection = new SqliteConnection(connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             string query = "DELETE FROM KeyPoints WHERE Id = @Id";
