@@ -9,10 +9,12 @@ namespace tourism_api.Controllers;
 public class RestaurantController : ControllerBase
 {
     private readonly RestaurantRepository _restaurantRepo;
+    private readonly UserRepository _userRepo;
 
     public RestaurantController(IConfiguration configuration)
     {
         _restaurantRepo = new RestaurantRepository(configuration);
+        _userRepo = new UserRepository(configuration);
     }
 
     [HttpGet]
@@ -81,6 +83,12 @@ public class RestaurantController : ControllerBase
 
         try
         {
+            User user = _userRepo.GetById(newRestaurant.OwnerId);
+            if (user == null)
+            {
+                return NotFound($"User with ID {newRestaurant.OwnerId} not found.");
+            }
+
             Restaurant createdRestaurant = _restaurantRepo.Create(newRestaurant);
             return Ok(createdRestaurant);
         }

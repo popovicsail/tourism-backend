@@ -8,8 +8,8 @@ namespace tourism_api.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
-
     private readonly UserRepository _userRepo;
+
     public UserController(IConfiguration configuration)
     {
         _userRepo = new UserRepository(configuration);

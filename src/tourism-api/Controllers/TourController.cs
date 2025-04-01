@@ -9,10 +9,12 @@ namespace tourism_api.Controllers;
 public class TourController : ControllerBase
 {
     private readonly TourRepository _tourRepo;
+    private readonly UserRepository _userRepo;
 
     public TourController(IConfiguration configuration)
     {
         _tourRepo = new TourRepository(configuration);
+        _userRepo = new UserRepository(configuration);
     }
 
     [HttpGet]
@@ -81,6 +83,12 @@ public class TourController : ControllerBase
 
         try
         {
+            User user = _userRepo.GetById(newTour.GuideId);
+            if (user == null)
+            {
+                return NotFound($"User with ID {newTour.GuideId} not found.");
+            }
+
             Tour createdTour = _tourRepo.Create(newTour);
             return Ok(createdTour);
         }

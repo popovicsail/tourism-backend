@@ -234,7 +234,6 @@ public class RestaurantRepository
                 } while (reader.Read());
             }
 
-
             return restaurant;
         }
         catch (SqliteException ex)
