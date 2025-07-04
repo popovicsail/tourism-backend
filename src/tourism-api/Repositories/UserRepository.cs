@@ -12,32 +12,46 @@ public class UserRepository
     }
     public User Get(string username, string password)
     {
+        User user = null;
         try
         {
             using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
-            string query = "SELECT Id, Username, Password, Role FROM Users WHERE Username = @Username AND Password = @Password";
+            string query1 = "SELECT Id, Username, Password, Role FROM Users WHERE Username = @Username AND Password = @Password";
 
-            using SqliteCommand command = new SqliteCommand(query, connection);
+            using SqliteCommand command = new SqliteCommand(query1, connection);
             command.Parameters.AddWithValue("@Username", username);
             command.Parameters.AddWithValue("@Password", password);
 
-            using SqliteDataReader reader = command.ExecuteReader();
+            using SqliteDataReader reader1 = command.ExecuteReader();
 
-            if (reader.Read())
+            if (reader1.Read())
             {
-                User user = new User
+                user = new User
                 {
-                    Id = Convert.ToInt32(reader["Id"]),
-                    Username = reader["Username"].ToString(),
-                    Password = reader["Password"].ToString(),
-                    Role = reader["Role"].ToString()
+                    Id = Convert.ToInt32(reader1["Id"]),
+                    Username = reader1["Username"].ToString(),
+                    Password = reader1["Password"].ToString(),
+                    Role = reader1["Role"].ToString()
                 };
-                return user;
             }
 
-            return null;
+            string query2 = "SELECT DISTINCT TourId FROM Reservations WHERE UserId = @UserId";
+
+            List<int> reservations = new List<int>();
+
+            using (var toursCommand = new SqliteCommand(query2, connection))
+            {
+                toursCommand.Parameters.AddWithValue("@UserId", user.Id);
+
+                using SqliteDataReader reader2 = toursCommand.ExecuteReader();
+                while (reader2.Read())
+                {
+                    reservations.Add(reader2.GetInt32(0));
+                }
+            }
+            user.Reservations = reservations;
         }
         catch (SqliteException ex)
         {
@@ -59,6 +73,7 @@ public class UserRepository
             Console.WriteLine($"Neočekivana greška: {ex.Message}");
             throw;
         }
+        return user;
     }
 
     public User GetById(int id)

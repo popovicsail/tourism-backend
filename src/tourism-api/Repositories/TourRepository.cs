@@ -11,9 +11,15 @@ public class TourRepository
         _connectionString = configuration["ConnectionString:SQLiteConnection"];
     }
 
-    public List<Tour> GetPaged(int page, int pageSize, string orderBy, string orderDirection)
+    public List<Tour> GetPaged(int page, int pageSize, string orderBy, string orderDirection, string tourStatus)
     {
         List<Tour> tours = new List<Tour>();
+        string sqlStatusFilter = "";
+
+        if (tourStatus != null)
+        {
+            sqlStatusFilter = $"WHERE t.Status = @tourStatus";
+        }
 
         try
         {
@@ -25,10 +31,16 @@ public class TourRepository
                            u.Id AS GuideId, u.Username 
                     FROM Tours t 
                     INNER JOIN Users u ON t.GuideId = u.Id
+                    {sqlStatusFilter}
                     ORDER BY {orderBy} {orderDirection} LIMIT @PageSize OFFSET @Offset";
             using SqliteCommand command = new SqliteCommand(query, connection);
             command.Parameters.AddWithValue("@PageSize", pageSize);
             command.Parameters.AddWithValue("@Offset", pageSize * (page - 1));
+
+            if (tourStatus != null)
+            {
+                command.Parameters.AddWithValue("@tourStatus", tourStatus);
+            }
 
             using SqliteDataReader reader = command.ExecuteReader();
 
@@ -75,15 +87,28 @@ public class TourRepository
         }
     }
 
-    public int CountAll()
+    public int CountAll(string tourStatus)
     {
+        string sqlStatusFilter = "";
+
+        if (tourStatus != null)
+        {
+            sqlStatusFilter = $"WHERE Status = @tourStatus";
+        }
         try
         {
             using SqliteConnection connection = new SqliteConnection(_connectionString);
             connection.Open();
 
-            string query = "SELECT COUNT(*) FROM Tours";
+            string query = @$"SELECT COUNT(*) FROM Tours
+                            {sqlStatusFilter}";
+            ;
+
             using SqliteCommand command = new SqliteCommand(query, connection);
+            if (tourStatus != null)
+            {
+                command.Parameters.AddWithValue("@tourStatus", tourStatus);
+            }
 
             return Convert.ToInt32(command.ExecuteScalar());
         }
@@ -178,11 +203,16 @@ public class TourRepository
 
             string query = @"
                     SELECT t.Id, t.Name, t.Description, t.DateTime, t.MaxGuests, t.Status,
-                           u.Id AS GuideId, u.Username,
+                           u.Id AS GuideId, u.Username, u.Role,
                            kp.Id AS KeyPointId, kp.OrderPosition, kp.Name AS KeyPointName, kp.Description AS KeyPointDescription, 
-                           kp.ImageUrl AS KeyPointImageUrl, kp.Latitude, kp.Longitude
+                           kp.ImageUrl AS KeyPointImageUrl, kp.Latitude, kp.Longitude, 
+                           (
+                               SELECT COUNT(*) 
+                               FROM Reservations r 
+                               WHERE r.TourId = t.Id
+                           ) AS ReservationCount
                     FROM Tours t
-                    INNER JOIN Users u ON t.GuideId = u.Id
+                    INNER JOIN Users u ON t.GuideId = u.Id                  
                     LEFT JOIN KeyPoints kp ON kp.TourId = t.Id
                     WHERE t.Id = @Id";
             using SqliteCommand command = new SqliteCommand(query, connection);
@@ -206,9 +236,12 @@ public class TourRepository
                         Guide = new User
                         {
                             Id = Convert.ToInt32(reader["GuideId"]),
-                            Username = reader["Username"].ToString()
+                            Username = reader["Username"].ToString(),
+                            Password = "success",
+                            Role = reader["Role"].ToString()
                         },
-                        KeyPoints = new List<KeyPoint>()
+                        KeyPoints = new List<KeyPoint>(),
+                        ReservationCount = Convert.ToInt32(reader["ReservationCount"])
                     };
                 }
 

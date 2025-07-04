@@ -18,7 +18,7 @@ public class TourController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult GetPaged([FromQuery] int guideId = 0, [FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string orderBy = "Name", [FromQuery] string orderDirection = "ASC")
+    public ActionResult GetPaged([FromQuery] int guideId = 0, [FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string orderBy = "Name", [FromQuery] string orderDirection = "ASC", [FromQuery] string tourStatus = null)
     {
         if (guideId > 0)
         {
@@ -38,14 +38,20 @@ public class TourController : ControllerBase
             orderDirection = "ASC"; // Default vrednost
         }
 
+        List<string> validTourStatus = new List<string> { "Published", "Ready", "Not Ready" };
+        if (!validTourStatus.Contains(tourStatus))
+        {
+            tourStatus = null;
+        }
+
         try
         {
-            List<Tour> tours = _tourRepo.GetPaged(page, pageSize, orderBy, orderDirection);
-            int totalCount = _tourRepo.CountAll();
+            List<Tour> tours = _tourRepo.GetPaged(page, pageSize, orderBy, orderDirection, tourStatus);
+            int totalCount = _tourRepo.CountAll(tourStatus);
             Object result = new
             {
-                Data = tours,
-                TotalCount = totalCount
+                data = tours,
+                totalCount = totalCount
             };
             return Ok(result);
         }
