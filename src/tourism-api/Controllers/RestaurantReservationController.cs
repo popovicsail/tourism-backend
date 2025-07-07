@@ -18,7 +18,7 @@ namespace tourism_api.Controllers
             _RestaurantReservationRepo = new RestaurantReservationRepository(configuration);
         }
 
-        [HttpPost("{restaurantId}/reservations")]
+        [HttpPost("{restaurantId}")]
         public ActionResult<Reservation> CreateReservation(int restaurantId, [FromBody] restaurantReservation reservation)
         {
             // Validate input
@@ -43,21 +43,21 @@ namespace tourism_api.Controllers
             return Ok(created);
         }
 
-        [HttpGet("reservations")]
+        [HttpGet]
         public ActionResult<List<restaurantReservation>> GetReservations([FromQuery] int touristId)
         {
             var reservations = _RestaurantReservationRepo.GetByTourist(touristId);
             return Ok(reservations);
         }
 
-        [HttpDelete("reservations/{reservationId}")]
+        [HttpDelete("{reservationId}")]
         public ActionResult CancelReservation(int reservationId)
         {
             var reservation = _RestaurantReservationRepo.GetById(reservationId);
             if (reservation == null)
                 return NotFound("Reservation not found.");
 
-            // Calculate reservation time
+            // Izračunaj tačno vreme obroka
             DateTime reservationTime = reservation.Date.Date;
             switch (reservation.Meal)
             {
@@ -68,6 +68,15 @@ namespace tourism_api.Controllers
             }
 
             var now = DateTime.Now;
+
+            // Ako je rezervacija već prošla, dozvoli brisanje bez ograničenja
+            if (now > reservationTime)
+            {
+                _RestaurantReservationRepo.Delete(reservationId);
+                return Ok("Reservation deleted (past event).");
+            }
+
+            // Inače primeni pravila otkazivanja
             var diff = reservationTime - now;
             if (reservation.Meal == "Doručak" && diff.TotalHours < 12)
                 return BadRequest("Breakfast reservations can only be canceled at least 12 hours in advance.");
@@ -77,5 +86,6 @@ namespace tourism_api.Controllers
             _RestaurantReservationRepo.Delete(reservationId);
             return Ok("Reservation canceled.");
         }
+
     }
 }
