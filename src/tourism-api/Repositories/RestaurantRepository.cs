@@ -26,6 +26,7 @@ public class RestaurantRepository
                            u.Id AS OwnerId, u.Username
                     FROM Restaurants r
                     INNER JOIN Users u ON r.OwnerId = u.Id
+                    WHERE r.Status = 'Otvoren'
                     ORDER BY {orderBy} {orderDirection} LIMIT @PageSize OFFSET @Offset";
             using SqliteCommand command = new SqliteCommand(query, connection);
             command.Parameters.AddWithValue("@PageSize", pageSize);
@@ -219,8 +220,6 @@ public class RestaurantRepository
                     },
                     Meals = new List<Meal>()
                 };
-
-                restaurant.Reviews = _reviewRepo.GetByRestaurantId(id);
 
                 do
                 {
