@@ -5,9 +5,11 @@ namespace tourism_api.Repositories;
 public class RestaurantRepository
 {
     private readonly string _connectionString;
+    private readonly RestoranReviewRepository _reviewRepo;
     public RestaurantRepository(IConfiguration configuration)
     {
         _connectionString = configuration["ConnectionString:SQLiteConnection"];
+        _reviewRepo = new RestoranReviewRepository(configuration);
     }
 
     public List<Restaurant> GetPaged(int page, int pageSize, string orderBy, string orderDirection)
@@ -24,6 +26,7 @@ public class RestaurantRepository
                            u.Id AS OwnerId, u.Username
                     FROM Restaurants r
                     INNER JOIN Users u ON r.OwnerId = u.Id
+                    WHERE r.Status = 'Otvoren'
                     ORDER BY {orderBy} {orderDirection} LIMIT @PageSize OFFSET @Offset";
             using SqliteCommand command = new SqliteCommand(query, connection);
             command.Parameters.AddWithValue("@PageSize", pageSize);
@@ -51,7 +54,10 @@ public class RestaurantRepository
                     }
                 });
             }
-
+            foreach (var restaurant in restaurants)
+            {
+                restaurant.AverageRating = _reviewRepo.GetAverageRatingForRestaurant(restaurant.Id);
+            }
 
             return restaurants;
         }
@@ -233,7 +239,6 @@ public class RestaurantRepository
                     }
                 } while (reader.Read());
             }
-
             return restaurant;
         }
         catch (SqliteException ex)
