@@ -5,9 +5,11 @@ namespace tourism_api.Repositories;
 public class RestaurantRepository
 {
     private readonly string _connectionString;
+    private readonly RestoranReviewRepository _reviewRepo;
     public RestaurantRepository(IConfiguration configuration)
     {
         _connectionString = configuration["ConnectionString:SQLiteConnection"];
+        _reviewRepo = new RestoranReviewRepository(configuration);
     }
 
     public List<Restaurant> GetPaged(int page, int pageSize, string orderBy, string orderDirection)
@@ -51,7 +53,10 @@ public class RestaurantRepository
                     }
                 });
             }
-
+            foreach (var restaurant in restaurants)
+            {
+                restaurant.AverageRating = _reviewRepo.GetAverageRatingForRestaurant(restaurant.Id);
+            }
 
             return restaurants;
         }
@@ -215,6 +220,8 @@ public class RestaurantRepository
                     Meals = new List<Meal>()
                 };
 
+                restaurant.Reviews = _reviewRepo.GetByRestaurantId(id);
+
                 do
                 {
                     if (reader["MealId"] != DBNull.Value)
@@ -233,7 +240,6 @@ public class RestaurantRepository
                     }
                 } while (reader.Read());
             }
-
             return restaurant;
         }
         catch (SqliteException ex)

@@ -10,11 +10,13 @@ public class RestaurantController : ControllerBase
 {
     private readonly RestaurantRepository _restaurantRepo;
     private readonly UserRepository _userRepo;
+    private readonly RestoranReviewRepository _reviewRepo;
 
     public RestaurantController(IConfiguration configuration)
     {
         _restaurantRepo = new RestaurantRepository(configuration);
         _userRepo = new UserRepository(configuration);
+        _reviewRepo = new RestoranReviewRepository(configuration);
     }
 
     [HttpGet]

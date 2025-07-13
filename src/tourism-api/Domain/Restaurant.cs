@@ -12,7 +12,9 @@ public class Restaurant
     public string? Status { get; set; } = "u pripremi";
     public User? Owner { get; set; }
     public int OwnerId { get; set; }
+    public double AverageRating { get; set; }
     public List<Meal> Meals { get; set; } = new List<Meal>();
+    public List<RestoranReview> Reviews { get; set; } = new List<RestoranReview>();
 
     public bool IsValid()
     {
