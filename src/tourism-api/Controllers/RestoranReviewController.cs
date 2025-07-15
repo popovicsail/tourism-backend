@@ -90,24 +90,17 @@ namespace tourism_api.Controllers
         }
 
 
-        private bool CanRateBasedOnLastReservation(int restaurantId, int touristId)
+        private bool IsWithinRatingWindow(int restaurantId, int touristId)
         {
-            List<restaurantReservation> reservations = _reservationRepo.GetByTourist(touristId);
+            var reservations = _reservationRepo.GetByTourist(touristId);
+            var now = DateTime.UtcNow;
 
-            restaurantReservation lastReservation = reservations
-                .Where(r => r.RestaurantId == restaurantId)
-                .OrderByDescending(r => r.Date)
-                .FirstOrDefault();
-
-            if (lastReservation == null)
-                return false;
-
-            DateTime now = DateTime.UtcNow;
-            DateTime oneHourAfter = lastReservation.Date.AddHours(1);
-            DateTime threeDaysAfter = lastReservation.Date.AddDays(3);
-
-            return now >= oneHourAfter && now <= threeDaysAfter;
+            return reservations.Any(r =>
+                r.RestaurantId == restaurantId &&
+                r.Date.AddHours(1) <= now &&
+                r.Date.AddDays(3) >= now);
         }
+
 
 
     }
