@@ -53,7 +53,7 @@ namespace tourism_api.Controllers
                     return BadRequest("Invalid review data. Please check rating, text, and IDs.");
                 }
 
-                if (!CanRateBasedOnLastReservation(review.RestoranId, review.UserId))
+                if (!IsWithinRatingWindow(review.RestoranId, review.UserId))
                 {
                     return StatusCode(StatusCodes.Status403Forbidden,
                         "Restoran možete oceniti najranije sat vremena nakon poslednje rezervacije i najkasnije tri dana nakon posete.");
