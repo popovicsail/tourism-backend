@@ -90,6 +90,29 @@ namespace tourism_api.Controllers
         }
 
 
+        [HttpGet("canRate")]
+        public ActionResult CanUserRate([FromQuery] int restoranId, [FromQuery] int userId)
+        {
+            try
+            {
+                Console.WriteLine($"restoranId = {restoranId}, userId = {userId}");
+
+                bool canRate = IsWithinRatingWindow(restoranId, userId);
+
+                if (!canRate)
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden,
+                        "Restoran možete oceniti najranije sat vremena nakon poslednje rezervacije i najkasnije tri dana nakon posete.");
+                }
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return Problem("Greška prilikom provere ocenjivanja: " + ex.Message);
+            }
+        }
+
         private bool IsWithinRatingWindow(int restaurantId, int touristId)
         {
             var reservations = _reservationRepo.GetByTourist(touristId);
