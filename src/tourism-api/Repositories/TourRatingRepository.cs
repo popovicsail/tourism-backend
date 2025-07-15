@@ -48,20 +48,9 @@ namespace tourism_api.Repositories
             return tourRating;
         }
 
-        public List<TourRating> GetById(int id, string idType)
+        public TourRating GetById(int id)
         {
-            List<TourRating> tourRatings = new List<TourRating>();
-
-            string searchQuery = null;
-
-            if (idType == "userId")
-            {
-                searchQuery = "WHERE t.UserId = @Id";
-            }
-            else if (idType == "tourId")
-            {
-                searchQuery = "WHERE t.TourId = @Id";
-            }
+            TourRating tourRating = null;
 
             try
             {
@@ -71,17 +60,15 @@ namespace tourism_api.Repositories
                 string query = @$"
                     SELECT t.Id, t.TourId, t.UserId, t.RatingDate, t.Rating, t.Comment, u.Username
                     FROM TourRatings t 
-                    INNER JOIN Users u ON t.UserId = u.Id
-                    {searchQuery}";
-                using SqliteCommand command = new SqliteCommand(query, connection);
+                    INNER JOIN Users u ON t.UserId = u.Id";
 
-                command.Parameters.AddWithValue("@Id", id);
+                using SqliteCommand command = new SqliteCommand(query, connection);
 
                 using SqliteDataReader reader = command.ExecuteReader();
 
-                while (reader.Read())
+                if (reader.Read())
                 {
-                    tourRatings.Add(new TourRating
+                    tourRating = new TourRating
                     {
                         Id = Convert.ToInt32(reader["Id"]),
                         TourId = Convert.ToInt32(reader["TourId"]),
@@ -89,11 +76,11 @@ namespace tourism_api.Repositories
                         Comment = reader["Comment"].ToString(),
                         Rating = Convert.ToInt32(reader["Rating"]),
                         Username = reader["Username"].ToString()
-                    });
+                    };
+                    return tourRating;
                 }
-
-                return tourRatings;
             }
+
             catch (SqliteException ex)
             {
                 Console.WriteLine($"Greška pri konekciji ili izvršavanju neispravnih SQL upita: {ex.Message}");
@@ -114,6 +101,7 @@ namespace tourism_api.Repositories
                 Console.WriteLine($"Neočekivana greška: {ex.Message}");
                 throw;
             }
+            return tourRating;
         }
 
         public List<TourRating> GetAll()

@@ -8,10 +8,14 @@ namespace tourism_api.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
+    private readonly TourReservationRepository _tourReservationRepo;
+    private readonly TourRatingRepository _tourRatingRepo;
     private readonly UserRepository _userRepo;
 
     public UserController(IConfiguration configuration)
     {
+        _tourReservationRepo = new TourReservationRepository(configuration);
+        _tourRatingRepo = new TourRatingRepository(configuration);
         _userRepo = new UserRepository(configuration);
     }
 
@@ -38,4 +42,44 @@ public class UserController : ControllerBase
         }
     }
 
+    [HttpGet("{userId}/tour-reservations")]
+    public ActionResult<TourReservation> GetTourReservationsByUserId()
+    {
+        try
+        {
+            User user = _userRepo.Get(credentials.Username, credentials.Password);
+            if (user == null)
+            {
+                return NotFound("Invalid username or password.");
+            }
+            return Ok(user);
+        }
+        catch (Exception ex)
+        {
+            return Problem("An unexpected error occurred while processing login request.");
+        }
+    }
+
+    [HttpGet("{userId}/tour-ratings")]
+    public ActionResult<TourRating> GetTourRatingsByUserId()
+    {
+        if (!credentials.IsValid())
+        {
+            return BadRequest("Invalid data.");
+        }
+
+        try
+        {
+            User user = _userRepo.Get(credentials.Username, credentials.Password);
+            if (user == null)
+            {
+                return NotFound("Invalid username or password.");
+            }
+            return Ok(user);
+        }
+        catch (Exception ex)
+        {
+            return Problem("An unexpected error occurred while processing login request.");
+        }
+    }
 }

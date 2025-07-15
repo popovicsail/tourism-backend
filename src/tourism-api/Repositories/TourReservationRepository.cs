@@ -3,18 +3,18 @@ using tourism_api.Domain;
 
 namespace tourism_api.Repositories
 {
-    public class ReservationRepository
+    public class TourReservationRepository
     {
         private readonly string _connectionString;
 
-        public ReservationRepository(IConfiguration configuration)
+        public TourReservationRepository(IConfiguration configuration)
         {
             _connectionString = configuration["ConnectionString:SQLiteConnection"];
         }
 
-        public List<Reservation> Create(Reservation reservation, int reservationAmount)
+        public List<TourReservation> Create(TourReservation reservation, int reservationAmount)
         {
-            var reservations = new List<Reservation>();
+            var reservations = new List<TourReservation>();
 
             try
             {
@@ -34,7 +34,7 @@ namespace tourism_api.Repositories
 
                     int newId = Convert.ToInt32(command.ExecuteScalar());
 
-                    reservations.Add(new Reservation
+                    reservations.Add(new TourReservation
                     {
                         Id = (int)newId,
                         userId = reservation.userId,

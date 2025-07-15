@@ -6,24 +6,22 @@ namespace tourism_api.Controllers;
 
 [Route("api/reservations")]
 [ApiController]
-public class ReservationController : Controller
+public class TourReservationController : Controller
 {
-    private readonly TourRepository _tourRepo;
-    private readonly UserRepository _userRepo;
-    private readonly ReservationRepository _reservationRepo;
-    public ReservationController(IConfiguration configuration)
+    private readonly TourReservationRepository _reservationRepo;
+    public TourReservationController(IConfiguration configuration)
     {
-        _tourRepo = new TourRepository(configuration);
-        _userRepo = new UserRepository(configuration);
-        _reservationRepo = new ReservationRepository(configuration);
+        _reservationRepo = new TourReservationRepository(configuration);
     }
 
+
+
     [HttpPost]
-    public ActionResult<List<Reservation>> Create([FromBody] Reservation newReservation, [FromQuery] int reservationAmount = 1)
+    public ActionResult<List<TourReservation>> Create([FromBody] TourReservation newReservation, [FromQuery] int reservationAmount = 1)
     {
         try
         {
-            List<Reservation> createdReservation = _reservationRepo.Create(newReservation, reservationAmount);
+            List<TourReservation> createdReservation = _reservationRepo.Create(newReservation, reservationAmount);
             return Ok(createdReservation);
         }
         catch (Exception ex)

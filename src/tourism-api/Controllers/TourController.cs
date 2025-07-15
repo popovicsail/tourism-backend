@@ -61,6 +61,42 @@ public class TourController : ControllerBase
         }
     }
 
+    [HttpGet("{id}/tour-reservations")]
+    public ActionResult<Tour> GetById(int id)
+    {
+        try
+        {
+            Tour tour = _tourRepo.GetById(id);
+            if (tour == null)
+            {
+                return NotFound($"Tour with ID {id} not found.");
+            }
+            return Ok(tour);
+        }
+        catch (Exception ex)
+        {
+            return Problem("An error occurred while fetching the tour.");
+        }
+    }
+
+    [HttpGet("{id}/tour-ratings")]
+    public ActionResult<Tour> GetById(int id)
+    {
+        try
+        {
+            Tour tour = _tourRepo.GetById(id);
+            if (tour == null)
+            {
+                return NotFound($"Tour with ID {id} not found.");
+            }
+            return Ok(tour);
+        }
+        catch (Exception ex)
+        {
+            return Problem("An error occurred while fetching the tour.");
+        }
+    }
+
     [HttpGet("{id}")]
     public ActionResult<Tour> GetById(int id)
     {
