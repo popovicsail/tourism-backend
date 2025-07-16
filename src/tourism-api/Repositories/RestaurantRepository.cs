@@ -239,6 +239,7 @@ public class RestaurantRepository
                     }
                 } while (reader.Read());
             }
+            restaurant.AverageRating = _reviewRepo.GetAverageRatingForRestaurant(restaurant.Id);
             return restaurant;
         }
         catch (SqliteException ex)
