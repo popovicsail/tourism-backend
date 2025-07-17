@@ -26,7 +26,6 @@ public class UserController : ControllerBase
         {
             return BadRequest("Invalid data.");
         }
-
         try
         {
             User user = _userRepo.Get(credentials.Username, credentials.Password);
@@ -43,39 +42,26 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{userId}/tour-reservations")]
-    public ActionResult<TourReservation> GetTourReservationsByUserId()
+    public ActionResult<List<TourReservation>> GetTourReservationsByUserId(int userId)
     {
         try
         {
-            User user = _userRepo.Get(credentials.Username, credentials.Password);
-            if (user == null)
-            {
-                return NotFound("Invalid username or password.");
-            }
-            return Ok(user);
+            List<TourReservation> tourReservations = _tourReservationRepo.GetByUserId(userId);
+            return Ok(tourReservations);
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
             return Problem("An unexpected error occurred while processing login request.");
         }
     }
 
     [HttpGet("{userId}/tour-ratings")]
-    public ActionResult<TourRating> GetTourRatingsByUserId()
+    public ActionResult<List<TourRating>> GetTourRatingsByUserId(int userId)
     {
-        if (!credentials.IsValid())
-        {
-            return BadRequest("Invalid data.");
-        }
-
         try
         {
-            User user = _userRepo.Get(credentials.Username, credentials.Password);
-            if (user == null)
-            {
-                return NotFound("Invalid username or password.");
-            }
-            return Ok(user);
+            List<TourRating> tourRatings = _tourRatingRepo.GetByUserId(userId);
+            return Ok(tourRatings);
         }
         catch (Exception ex)
         {

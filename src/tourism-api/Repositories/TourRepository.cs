@@ -27,10 +27,8 @@ public class TourRepository
             connection.Open();
 
             string query = @$"
-                    SELECT t.Id, t.Name, t.Description, t.DateTime, t.MaxGuests, t.Status,
-                           u.Id AS GuideId, u.Username 
+                    SELECT t.Id, t.Name, t.Description, t.DateTime, t.MaxGuests, t.Status, t.GuideId
                     FROM Tours t 
-                    INNER JOIN Users u ON t.GuideId = u.Id
                     {sqlStatusFilter}
                     ORDER BY {orderBy} {orderDirection} LIMIT @PageSize OFFSET @Offset";
             using SqliteCommand command = new SqliteCommand(query, connection);
@@ -55,11 +53,6 @@ public class TourRepository
                     MaxGuests = Convert.ToInt32(reader["MaxGuests"]),
                     Status = reader["Status"].ToString(),
                     GuideId = Convert.ToInt32(reader["GuideId"]),
-                    Guide = new User
-                    {
-                        Id = Convert.ToInt32(reader["GuideId"]),
-                        Username = reader["Username"].ToString()
-                    }
                 });
             }
 
@@ -134,7 +127,7 @@ public class TourRepository
         }
     }
 
-    public List<Tour> GetByGuide(int guideId)
+    public List<Tour> GetByGuideId(int guideId)
     {
         List<Tour> tours = new List<Tour>();
 
@@ -202,18 +195,8 @@ public class TourRepository
             connection.Open();
 
             string query = @"
-                    SELECT t.Id, t.Name, t.Description, t.DateTime, t.MaxGuests, t.Status,
-                           u.Id AS GuideId, u.Username, u.Role,
-                           kp.Id AS KeyPointId, kp.OrderPosition, kp.Name AS KeyPointName, kp.Description AS KeyPointDescription, 
-                           kp.ImageUrl AS KeyPointImageUrl, kp.Latitude, kp.Longitude, 
-                           (
-                               SELECT COUNT(*) 
-                               FROM Reservations r 
-                               WHERE r.TourId = t.Id
-                           ) AS ReservationCount
-                    FROM Tours t
-                    INNER JOIN Users u ON t.GuideId = u.Id                  
-                    LEFT JOIN KeyPoints kp ON kp.TourId = t.Id
+                    SELECT t.Id, t.Name, t.Description, t.DateTime, t.MaxGuests, t.Status
+                    FROM Tours t             
                     WHERE t.Id = @Id";
             using SqliteCommand command = new SqliteCommand(query, connection);
             command.Parameters.AddWithValue("@Id", id);
@@ -232,33 +215,7 @@ public class TourRepository
                         DateTime = Convert.ToDateTime(reader["DateTime"]),
                         MaxGuests = Convert.ToInt32(reader["MaxGuests"]),
                         Status = reader["Status"].ToString(),
-                        GuideId = Convert.ToInt32(reader["GuideId"]),
-                        Guide = new User
-                        {
-                            Id = Convert.ToInt32(reader["GuideId"]),
-                            Username = reader["Username"].ToString(),
-                            Password = "success",
-                            Role = reader["Role"].ToString()
-                        },
-                        KeyPoints = new List<KeyPoint>(),
-                        ReservationCount = Convert.ToInt32(reader["ReservationCount"])
                     };
-                }
-
-                if (reader["KeyPointId"] != DBNull.Value)
-                {
-                    KeyPoint keyPoint = new KeyPoint
-                    {
-                        Id = Convert.ToInt32(reader["KeyPointId"]),
-                        Order = Convert.ToInt32(reader["OrderPosition"]),
-                        Name = reader["KeyPointName"].ToString(),
-                        Description = reader["KeyPointDescription"].ToString(),
-                        ImageUrl = reader["KeyPointImageUrl"].ToString(),
-                        Latitude = Convert.ToInt32(reader["Latitude"]),
-                        Longitude = Convert.ToInt32(reader["Longitude"]),
-                        TourId = Convert.ToInt32(reader["Id"])
-                    };
-                    tour.KeyPoints.Add(keyPoint);
                 }
             }
 

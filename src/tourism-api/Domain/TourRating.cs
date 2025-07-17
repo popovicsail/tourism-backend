@@ -8,6 +8,5 @@
         public string? Comment { get; set; }
         public int Rating { get; set; }
         public DateTime? RatingDate { get; set; }
-        public string? Username { get; set; }
     }
 }

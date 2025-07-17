@@ -1,5 +1,5 @@
 ﻿namespace tourism_api.Domain;
-public class KeyPoint
+public class TourKeyPoint
 {
     public int Id { get; set; }
     public int Order { get; set; }

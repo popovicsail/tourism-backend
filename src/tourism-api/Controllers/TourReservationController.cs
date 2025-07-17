@@ -4,7 +4,7 @@ using tourism_api.Repositories;
 
 namespace tourism_api.Controllers;
 
-[Route("api/reservations")]
+[Route("api/tour-reservations")]
 [ApiController]
 public class TourReservationController : Controller
 {
@@ -13,8 +13,6 @@ public class TourReservationController : Controller
     {
         _reservationRepo = new TourReservationRepository(configuration);
     }
-
-
 
     [HttpPost]
     public ActionResult<List<TourReservation>> Create([FromBody] TourReservation newReservation, [FromQuery] int reservationAmount = 1)
@@ -31,16 +29,16 @@ public class TourReservationController : Controller
     }
 
     [HttpDelete]
-    public ActionResult Delete([FromQuery] int tourId)
+    public ActionResult Delete([FromQuery] int reservationId)
     {
         try
         {
-            bool isDeleted = _reservationRepo.Delete(tourId);
+            bool isDeleted = _reservationRepo.Delete(reservationId);
             if (isDeleted)
             {
                 return NoContent();
             }
-            return NotFound($"Reservation with ID {tourId} not found.");
+            return NotFound($"Reservation with ID {reservationId} not found.");
         }
         catch (Exception ex)
         {

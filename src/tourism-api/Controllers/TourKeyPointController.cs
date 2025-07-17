@@ -6,19 +6,19 @@ namespace tourism_api.Controllers;
 
 [Route("api/tours/{tourId}/key-points")]
 [ApiController]
-public class KeyPointController : ControllerBase
+public class tourKeyPointController : ControllerBase
 {
     private readonly TourRepository _tourRepo;
-    private readonly KeyPointRepository _keyPointRepo;
+    private readonly TourKeyPointRepository _tourKeyPointRepo;
 
-    public KeyPointController(IConfiguration configuration)
+    public tourKeyPointController(IConfiguration configuration)
     {
         _tourRepo = new TourRepository(configuration);
-        _keyPointRepo = new KeyPointRepository(configuration);
+        _tourKeyPointRepo = new TourKeyPointRepository(configuration);
     }
 
     [HttpPost]
-    public ActionResult<KeyPoint> Create(int tourId, [FromBody] KeyPoint newKeyPoint)
+    public ActionResult<TourKeyPoint> Create(int tourId, [FromBody] TourKeyPoint newKeyPoint)
     {
         if (!newKeyPoint.IsValid())
         {
@@ -34,7 +34,7 @@ public class KeyPointController : ControllerBase
             }
 
             newKeyPoint.TourId = tourId;
-            KeyPoint createdKeyPoint = _keyPointRepo.Create(newKeyPoint);
+            TourKeyPoint createdKeyPoint = _tourKeyPointRepo.Create(newKeyPoint);
             return Ok(createdKeyPoint);
         }
         catch (Exception ex)
@@ -54,7 +54,7 @@ public class KeyPointController : ControllerBase
                 return NotFound($"Tour with ID {tourId} not found.");
             }
 
-            bool isDeleted = _keyPointRepo.Delete(id);
+            bool isDeleted = _tourKeyPointRepo.Delete(id);
             if (isDeleted)
             {
                 return NoContent();
