@@ -195,7 +195,7 @@ public class TourRepository
             connection.Open();
 
             string query = @"
-                    SELECT t.Id, t.Name, t.Description, t.DateTime, t.MaxGuests, t.Status
+                    SELECT t.Id, t.Name, t.Description, t.DateTime, t.MaxGuests, t.Status, t.GuideId
                     FROM Tours t             
                     WHERE t.Id = @Id";
             using SqliteCommand command = new SqliteCommand(query, connection);
@@ -215,6 +215,7 @@ public class TourRepository
                         DateTime = Convert.ToDateTime(reader["DateTime"]),
                         MaxGuests = Convert.ToInt32(reader["MaxGuests"]),
                         Status = reader["Status"].ToString(),
+                        GuideId = Convert.ToInt32(reader["GuideId"])
                     };
                 }
             }

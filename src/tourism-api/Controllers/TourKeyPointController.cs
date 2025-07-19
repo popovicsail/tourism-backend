@@ -4,21 +4,21 @@ using tourism_api.Repositories;
 
 namespace tourism_api.Controllers;
 
-[Route("api/tours/{tourId}/key-points")]
+[Route("api/tour-key-points")]
 [ApiController]
-public class tourKeyPointController : ControllerBase
+public class TourKeyPointController : ControllerBase
 {
     private readonly TourRepository _tourRepo;
     private readonly TourKeyPointRepository _tourKeyPointRepo;
 
-    public tourKeyPointController(IConfiguration configuration)
+    public TourKeyPointController(IConfiguration configuration)
     {
         _tourRepo = new TourRepository(configuration);
         _tourKeyPointRepo = new TourKeyPointRepository(configuration);
     }
 
     [HttpPost]
-    public ActionResult<TourKeyPoint> Create(int tourId, [FromBody] TourKeyPoint newKeyPoint)
+    public ActionResult<TourKeyPoint> Create([FromBody] TourKeyPoint newKeyPoint)
     {
         if (!newKeyPoint.IsValid())
         {
@@ -27,13 +27,12 @@ public class tourKeyPointController : ControllerBase
 
         try
         {
-            Tour tour = _tourRepo.GetById(tourId);
+            Tour tour = _tourRepo.GetById(newKeyPoint.TourId);
             if (tour == null)
             {
-                return NotFound($"Tour with ID {tourId} not found.");
+                return NotFound($"Tour with ID {newKeyPoint.TourId} not found.");
             }
 
-            newKeyPoint.TourId = tourId;
             TourKeyPoint createdKeyPoint = _tourKeyPointRepo.Create(newKeyPoint);
             return Ok(createdKeyPoint);
         }
@@ -44,16 +43,10 @@ public class tourKeyPointController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public ActionResult Delete(int tourId, int id)
+    public ActionResult Delete(int id)
     {
         try
         {
-            Tour tour = _tourRepo.GetById(tourId);
-            if (tour == null)
-            {
-                return NotFound($"Tour with ID {tourId} not found.");
-            }
-
             bool isDeleted = _tourKeyPointRepo.Delete(id);
             if (isDeleted)
             {
