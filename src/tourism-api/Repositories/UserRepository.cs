@@ -36,22 +36,6 @@ public class UserRepository
                     Role = reader1["Role"].ToString()
                 };
             }
-
-            string query2 = "SELECT DISTINCT TourId FROM Reservations WHERE UserId = @UserId";
-
-            List<int> reservations = new List<int>();
-
-            using (var toursCommand = new SqliteCommand(query2, connection))
-            {
-                toursCommand.Parameters.AddWithValue("@UserId", user.Id);
-
-                using SqliteDataReader reader2 = toursCommand.ExecuteReader();
-                while (reader2.Read())
-                {
-                    reservations.Add(reader2.GetInt32(0));
-                }
-            }
-            user.Reservations = reservations;
         }
         catch (SqliteException ex)
         {

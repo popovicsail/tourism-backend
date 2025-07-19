@@ -8,11 +8,17 @@ namespace tourism_api.Controllers;
 [ApiController]
 public class TourController : ControllerBase
 {
+    private readonly TourReservationRepository _tourReservationRepo;
+    private readonly TourRatingRepository _tourRatingRepo;
     private readonly TourRepository _tourRepo;
     private readonly UserRepository _userRepo;
+    private readonly TourKeyPointRepository _keyPointRepo;
 
     public TourController(IConfiguration configuration)
     {
+        _tourReservationRepo = new TourReservationRepository(configuration);
+        _tourRatingRepo = new TourRatingRepository(configuration);
+        _keyPointRepo = new TourKeyPointRepository(configuration);
         _tourRepo = new TourRepository(configuration);
         _userRepo = new UserRepository(configuration);
     }
@@ -22,20 +28,19 @@ public class TourController : ControllerBase
     {
         if (guideId > 0)
         {
-            return Ok(_tourRepo.GetByGuide(guideId));
+            return Ok(_tourRepo.GetByGuideId(guideId));
         }
 
-        // Validacija za orderBy i orderDirection
         List<string> validOrderByColumns = new List<string> { "Name", "Description", "DateTime", "MaxGuests" }; // Lista dozvoljenih kolona za sortiranje
         if (!validOrderByColumns.Contains(orderBy))
         {
-            orderBy = "Name"; // Default vrednost
+            orderBy = "Name";
         }
 
-        List<string> validOrderDirections = new List<string> { "ASC", "DESC" }; // Lista dozvoljenih smerova
+        List<string> validOrderDirections = new List<string> { "ASC", "DESC" };
         if (!validOrderDirections.Contains(orderDirection))
         {
-            orderDirection = "ASC"; // Default vrednost
+            orderDirection = "ASC";
         }
 
         List<string> validTourStatus = new List<string> { "Published", "Ready", "Not Ready" };
@@ -62,7 +67,7 @@ public class TourController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public ActionResult<Tour> GetById(int id)
+    public ActionResult<Tour> GetTourById(int id)
     {
         try
         {
@@ -76,6 +81,48 @@ public class TourController : ControllerBase
         catch (Exception ex)
         {
             return Problem("An error occurred while fetching the tour.");
+        }
+    }
+
+    [HttpGet("{tourId}/tour-reservations")]
+    public ActionResult<List<TourReservation>> GetTourReservationsByTourId(int tourId)
+    {
+        try
+        {
+            List<TourReservation> tourReservations = _tourReservationRepo.GetByTourId(tourId);
+            return tourReservations;
+        }
+        catch (Exception e)
+        {
+            return Problem("An unexpected error occurred while processing login request.");
+        }
+    }
+
+    [HttpGet("{tourId}/tour-ratings")]
+    public ActionResult<List<TourRating>> GetTourRatingsByTourId(int tourId)
+    {
+        try
+        {
+            ActionResult<List<TourRating>> tourRatings = _tourRatingRepo.GetByTourId(tourId);
+            return tourRatings;
+        }
+        catch (Exception ex)
+        {
+            return Problem("An unexpected error occurred while processing login request.");
+        }
+    }
+
+    [HttpGet("{tourId}/tour-key-points")]
+    public ActionResult<List<TourKeyPoint>> GetTourKeyPointsByTourId(int tourId)
+    {
+        try
+        {
+            List<TourKeyPoint> tourKeyPoints = _keyPointRepo.GetByTourId(tourId);
+            return tourKeyPoints;
+        }
+        catch (Exception ex)
+        {
+            return Problem("An unexpected error occurred while processing login request.");
         }
     }
 

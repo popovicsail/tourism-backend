@@ -4,7 +4,7 @@ using tourism_api.Repositories;
 
 namespace tourism_api.Controllers;
 
-[Route("api/comments")]
+[Route("api/tour-ratings")]
 [ApiController]
 public class TourRatingController : ControllerBase
 {
@@ -14,8 +14,6 @@ public class TourRatingController : ControllerBase
     {
         _tourRatingRepo = new TourRatingRepository(configuration);
     }
-
-
 
     [HttpGet]
     public ActionResult<List<TourRating>> GetAll()
@@ -27,21 +25,21 @@ public class TourRatingController : ControllerBase
         }
         catch (Exception ex)
         {
-            return Problem("An error occurred while fetching the comment.");
+            return Problem("An error occurred while fetching the ratings.");
         }
     }
 
     [HttpGet("{id}")]
-    public ActionResult<List<TourRating>> GetById(int id, [FromQuery] string idType)
+    public ActionResult<TourRating> GetById(int id)
     {
         try
         {
-            List<TourRating> tourRatings = _tourRatingRepo.GetById(id, idType);
-            return Ok(tourRatings);
+            TourRating tourRating = _tourRatingRepo.GetById(id);
+            return Ok(tourRating);
         }
         catch (Exception ex)
         {
-            return Problem("An error occurred while fetching the comment.");
+            return Problem("An error occurred while fetching the rating.");
         }
     }
 
