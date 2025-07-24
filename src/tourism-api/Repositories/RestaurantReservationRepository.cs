@@ -43,6 +43,39 @@ namespace tourism_api.Repositories
             return reservations;
         }
 
+        public List<restaurantReservation> GetByRestaurantDate(int restaurantId, int year)
+        {
+            var reservations = new List<restaurantReservation>();
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            string query = @"SELECT Id, RestaurantId, TouristId, Date, Meal, NumberOfPeople
+                     FROM RestaurantReservation
+                     WHERE RestaurantId = @RestaurantId 
+                     AND strftime('%Y', Date) = @Year";
+
+            using var command = new SqliteCommand(query, connection);
+            command.Parameters.AddWithValue("@RestaurantId", restaurantId);
+            command.Parameters.AddWithValue("@Year", year.ToString());
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                reservations.Add(new restaurantReservation
+                {
+                    Id = reader.GetInt32(0),
+                    RestaurantId = reader.GetInt32(1),
+                    TouristId = reader.GetInt32(2),
+                    Date = reader.GetDateTime(3),
+                    Meal = reader.GetString(4),
+                    NumberOfPeople = reader.GetInt32(5)
+                });
+            }
+
+            return reservations;
+        }
+
+
 
         // Get reservations by tourist
         public List<restaurantReservation> GetByTourist(int touristId)
