@@ -19,7 +19,7 @@ namespace tourism_api.Controllers
         }
 
         [HttpPost("{restaurantId}")]
-        public ActionResult<Reservation> CreateReservation(int restaurantId, [FromBody] restaurantReservation reservation)
+        public ActionResult<restaurantReservation> CreateReservation(int restaurantId, [FromBody] restaurantReservation reservation)
         {
             // Validate input
             if (reservation == null || reservation.NumberOfPeople <= 0 || string.IsNullOrEmpty(reservation.Meal) || reservation.Date == default)
