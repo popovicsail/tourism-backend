@@ -22,7 +22,7 @@ public class MealRepository
             // 1️ Brisanje starih jela iz jelovnika
             string deleteQuery = @"
             DELETE FROM Meals
-            WHERE RestaurantId = @RestaurantId AND Status = 'u ponudi';";
+            WHERE RestaurantId = @RestaurantId;";
             using var deleteCmd = new SqliteCommand(deleteQuery, connection, transaction);
             deleteCmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
             deleteCmd.ExecuteNonQuery();
@@ -41,7 +41,7 @@ public class MealRepository
                 insertCmd.Parameters.AddWithValue("@Price", meal.Price);
                 insertCmd.Parameters.AddWithValue("@Ingredients", meal.Ingredients);
                 insertCmd.Parameters.AddWithValue("@ImageUrl", meal.ImageUrl ?? (object)DBNull.Value);
-                insertCmd.Parameters.AddWithValue("@Status", meal.Status ?? "u ponudi");
+                insertCmd.Parameters.AddWithValue("@Status", meal.Status);
                 insertCmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
 
                 insertCmd.ExecuteNonQuery();

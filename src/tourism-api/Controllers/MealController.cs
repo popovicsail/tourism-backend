@@ -19,7 +19,7 @@ public class MealController : ControllerBase
     }
 
     [HttpGet()]
-    public ActionResult<List<Meal>> GetMealsByStatus(int restaurantId, [FromQuery] string status = "u ponudi")
+    public ActionResult<List<Meal>> GetMealsByStatus(int restaurantId)
     {
         try
         {
@@ -27,7 +27,7 @@ public class MealController : ControllerBase
             if (restaurant == null)
                 return NotFound($"Restoran {restaurantId} nije pronađen.");
 
-            var meals = _mealRepo.GetByRestaurantIdAndStatus(restaurantId, status);
+            var meals = _mealRepo.GetByRestaurantId(restaurantId);
             return Ok(meals);
         }
         catch (Exception ex)
@@ -60,31 +60,6 @@ public class MealController : ControllerBase
         }
     }
 
-
-    [HttpPost]
-    [Route("bulk")]
-    public IActionResult CreateMany([FromBody] List<Meal> meals)
-    {
-        if (meals == null || meals.Count == 0)
-            return BadRequest("Lista jela je prazna ili nije prosleđena.");
-
-        try
-        {
-            _mealRepo.CreateMany(meals); // Poziv na bulk insert metodu iz repozitorijuma
-            return Ok($"{meals.Count} jela uspešno dodato.");
-        }
-        catch (SqliteException ex)
-        {
-            Console.WriteLine($"Greška u SQLite unosu: {ex.Message}");
-            return StatusCode(500, "Došlo je do greške prilikom čuvanja jela.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Neočekivana greška: {ex.Message}");
-            return StatusCode(500, "Neočekivana greška na serveru.");
-        }
-    }
-
     [HttpPost]
     public ActionResult<Meal> Create(int restaurantId, [FromBody] Meal newMeal)
     {
@@ -112,15 +87,10 @@ public class MealController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public ActionResult Delete(int restaurantId, int id)
+    public ActionResult Delete(int id)
     {
         try
         {
-            Restaurant restaurant = _restaurantRepo.GetById(restaurantId);
-            if (restaurant == null)
-            {
-                return NotFound($"Restaurant with ID {restaurantId} not found.");
-            }
 
             bool isDeleted = _mealRepo.Delete(id);
             if (isDeleted)
