@@ -68,4 +68,53 @@ public class UserController : ControllerBase
             return Problem("An unexpected error occurred while processing login request.");
         }
     }
+
+
+    [HttpPost]
+    public ActionResult<User> Create([FromBody] User newUser)
+    {
+        if (!newUser.IsValid())
+        {
+            return BadRequest("Invalid user data.");
+        }
+
+        try
+        {
+            _userRepo.Create(newUser);
+            User createdUser = _userRepo.Get(newUser.Username, newUser.Password);
+            return Ok(createdUser);
+        }
+        catch (Exception ex)
+        {
+            return Problem("An error occurred while creating the user.");
+        }
+    }
+
+    [HttpPut("{id}")]
+    public ActionResult Update(int id, [FromBody] User updatedUser)
+    {
+        if (!updatedUser.IsValid())
+        {
+            return BadRequest("Invalid user data.");
+        }
+
+        try
+        {
+            User existingUser = _userRepo.GetById(id);
+            if (existingUser == null)
+            {
+                return NotFound($"User with ID {id} not found.");
+            }
+
+            updatedUser.Id = id; // osiguravamo da se koristi pravi ID
+            _userRepo.Update(updatedUser);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return Problem("An unexpected error occurred while updating the user.");
+        }
+    }
+
+
 }
